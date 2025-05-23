@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../../generated/prisma/client.js"
 const prisma = new PrismaClient();
 
 async function createUser(user) {
@@ -11,7 +11,7 @@ async function createUser(user) {
   }
 }
 
-async function fetchUser(email) {
+async function getUserByEmail(email) {
   try {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
@@ -44,4 +44,4 @@ async function deleteUser(email) {
   }
 }
 
-export { createUser, fetchUser, updateUser, deleteUser };
+export { createUser, getUserByEmail, updateUser, deleteUser };
