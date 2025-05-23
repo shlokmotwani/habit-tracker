@@ -6,7 +6,7 @@ async function signUp(req, res) {
   const { name, email, password } = req.body;
 
   try {
-    const hashedPassword = hashPassword(password);
+    const hashedPassword = await hashPassword(password);
     const user = { name, email, password: hashedPassword };
     const response = await createUser(user);
     res.status(200).json({ message: response.message });
