@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userID    Int       @id @default(autoincrement())
+  name      String    @db.VarChar(256)
+  email     String    @unique @db.VarChar(256)
+  password  String    @db.VarChar(400)
+  createdAt DateTime  @default(now())
+  habits    Habit[]
+  moodLogs  MoodLog[]
+}
+
+model Habit {
+  habitID   Int        @id @default(autoincrement())
+  title     String     @db.VarChar(100)
+  userID    Int
+  user      User       @relation(fields: [userID], references: [userID])
+  createdAt DateTime   @default(now())
+  habitLogs HabitLog[]
+}
+
+model HabitLog {
+  logID     Int      @id @default(autoincrement())
+  habitID   Int
+  habit     Habit    @relation(fields: [habitID], references: [habitID])
+  date      DateTime
+  completed Boolean
+}
+
+model MoodLog {
+  moodID Int      @id @default(autoincrement())
+  userID Int
+  user   User     @relation(fields: [userID], references: [userID])
+  date   DateTime
+  note   String   @db.VarChar(500)
+}
