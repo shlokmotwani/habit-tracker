@@ -1,47 +1,49 @@
-import { PrismaClient } from "../../generated/prisma/client.js"
-const prisma = new PrismaClient();
+import * as userService from "../services/userService.js";
 
-async function createUser(user) {
+async function createUser(req, res) {
   try {
-    const response = await prisma.user.create({ data: user });
-    return { message: "User created successfully.", response };
+    const user = await userService.createUser(req.body);
+    res.status(201).json({ message: "User created successfully.", user });
   } catch (error) {
     console.error("Error while creating user.", error);
-    return { message: "Error while creating user.", error };
+    res
+      .status(500)
+      .json({ message: "Error while creating user.", error: error.message });
   }
 }
 
-async function getUserByEmail(email) {
+async function fetchUser(req, res) {
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      return { message: "Email address not found." };
-    }
-    return { message: "User fetched successfully.", user };
-  } catch (error) {
-    console.error("Error while fetching user.", error);
-    return { message: "Error while fetching user.", error };
+    const user = await userService.getUserByEmail(req.params.email);
+    if (!user) return res.status(404).json({ message: "User not found." });
+    res.status(200).json({ user });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error fetching user.", error: err.message });
   }
 }
 
-async function updateUser(email, data) {
+async function updateUser(req, res) {
   try {
-    const response = await prisma.user.update({ where: { email }, data });
-    return { message: "User updated successfully.", response };
-  } catch (error) {
-    console.error("Error while updating user.", error);
-    return { message: "Error while updating user.", error };
+    const user = await userService.updateUser(req.params.email, req.body);
+    res.status(200).json({ message: "User updated successfully.", user });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error updating user.", error: err.message });
   }
 }
 
-async function deleteUser(email) {
+async function deleteUser(req, res) {
   try {
-    await prisma.user.delete({ where: { email } });
-    return { message: "User deleted successfully." };
-  } catch (error) {
-    console.error("Error while deleting user.", error);
-    return { message: "Error while deleting user.", error };
+    await userService.deleteUser(req.params.email);
+    res.status(200).json({ message: "User deleted successfully." });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error deleting user.", error: err.message });
   }
 }
 
-export { createUser, getUserByEmail, updateUser, deleteUser };
+export { createUser, fetchUser, updateUser, deleteUser };

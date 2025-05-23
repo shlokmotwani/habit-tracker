@@ -1,6 +1,6 @@
 import { comparePasswords, hashPassword } from "../utils/encryption.js";
 import { generateToken } from "../utils/jwt.js";
-import { createUser, getUserByEmail } from "./userController.js";
+import { createUser, fetchUser } from "./userController.js";
 
 async function signUp(req, res) {
   const { name, email, password } = req.body;
@@ -19,7 +19,7 @@ async function login(req, res) {
   const { email, password } = req.body;
 
   try {
-    const response = await getUserByEmail(email);
+    const response = await fetchUser(email);
 
     if (!response.user) {
       return res.status(401).json(response.message);
